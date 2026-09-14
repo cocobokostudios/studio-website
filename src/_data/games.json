@@ -1,6 +1,7 @@
 [
   {
     "title": "Passenger",
+    "workingTitle": true,
     "projectKey": "project-passenger",
     "phase": "Prototyping",
     "description": "More details coming soon.",
@@ -8,6 +9,7 @@
   },
   {
     "title": "Agent",
+    "workingTitle": true,
     "projectKey": "project-agent",
     "phase": "Paused",
     "description": "Agent is a narrative-driven micro-simulation where you play as the last human check-in agent at a small international airport. As automation takes over, you’ll navigate quirky requests, shifting policies, and the quiet tension of a world moving on without you while making connections like no machine could ever make.",
