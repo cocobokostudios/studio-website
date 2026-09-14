@@ -1,6 +1,6 @@
 <section id="games" class="container mx-auto max-w-6xl px-6 py-20 lg:px-8 lg:py-28">
   <div class="mx-auto max-w-2xl text-center">
-    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">In development</p>
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">Our projects</p>
     <h2 class="mt-3 text-4xl font-bold tracking-tight text-gray-900">Games</h2>
     <p class="mt-4 text-lg text-gray-500">Small worlds built around human stories, thoughtful systems, and the joy of discovery.</p>
   </div>
@@ -8,12 +8,19 @@
     <li webc:for="game of games" class="list-none">
       <article class="h-full overflow-hidden rounded-lg border border-gray-200 transition hover:border-purple-400 hover:shadow-sm">
         <img
+          webc:if="game.image"
           class="aspect-video w-full object-cover"
           :src="game.image.url"
           :srcset="game.image.srcset"
           sizes="(min-width: 1024px) 50vw, 100vw"
           :alt="game.image.alt"
         >
+        <div
+          webc:else
+          class="flex aspect-video w-full items-center justify-center bg-indigo-50 px-6 text-center text-3xl font-semibold text-indigo-600"
+          aria-hidden="true"
+          @text="game.title"
+        ></div>
         <div class="p-6">
           <p class="text-sm font-semibold text-indigo-600" @text="game.phase">Phase</p>
           <h3 class="mt-2 text-2xl font-bold text-gray-900" @text="game.title">Game title</h3>
