@@ -10,6 +10,8 @@ await rm(generatedImagesDir, { recursive: true, force: true });
 const games = JSON.parse(await readFile("src/_data/games.json", "utf8"));
 
 for (const game of games) {
+  if (!game.image) continue;
+
   const sourcePath = resolve(sourceImagesDir, game.image.source);
   const outputName = parse(game.image.source).name;
 

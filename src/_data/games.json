@@ -1,8 +1,24 @@
 [
   {
+    "title": "Passenger",
+    "workingTitle": true,
+    "projectKey": "project-passenger",
+    "phase": "Prototyping",
+    "description": "Make it to the gate on time. How hard can it be? Take on the role of a travelling consultant and navigate airports to catch your flight to the next gig, all while making your meetings and keeping your life and career in order.",
+    "image": {
+      "source": "passenger_website_banner.png",
+      "widths": [640, 960],
+      "url": "/images/generated/passenger_website_banner-960.webp",
+      "srcset": "/images/generated/passenger_website_banner-640.webp 640w, /images/generated/passenger_website_banner-960.webp 960w",
+      "alt": "A stylized airport terminal with a moving walkway, seating, departure displays, and a plane visible through large windows.",
+      "creditURL": ""
+    }
+  },
+  {
     "title": "Agent",
+    "workingTitle": true,
     "projectKey": "project-agent",
-    "phase": "Pre-production",
+    "phase": "Paused",
     "description": "Agent is a narrative-driven micro-simulation where you play as the last human check-in agent at a small international airport. As automation takes over, you’ll navigate quirky requests, shifting policies, and the quiet tension of a world moving on without you while making connections like no machine could ever make.",
     "image": {
       "source": "agent_website_banner.webp",
