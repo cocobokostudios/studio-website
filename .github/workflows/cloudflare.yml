@@ -75,7 +75,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Verify staging deployment
-        run: pnpm run test:e2e
+        run: |
+          node scripts/wait-for-release.mjs
+          pnpm run test:e2e
         env:
           SITE_URL: https://studio-website-staging.cocobokostudios.workers.dev
           CHECK_RELEASE: 'true'
@@ -84,7 +86,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Verify production deployment
-        run: pnpm run test:e2e
+        run: |
+          node scripts/wait-for-release.mjs
+          pnpm run test:e2e
         env:
           SITE_URL: https://studio-website.cocobokostudios.workers.dev
           CHECK_RELEASE: 'true'
