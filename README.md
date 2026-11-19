@@ -84,4 +84,4 @@ The **Build and Deploy** workflow verifies branch pushes and pull requests under
 
 The workflow summary records the commit and artifact digest. The deployment logs record each Worker version and the smoke tests verify the commit and digest served in `/release.txt`.
 
-Keep the existing Azure site available for rollback. Before switching nameservers, compare the Cloudflare zone with the complete authoritative DNS inventory and preserve the Azure web targets. Once delegation and TLS are ready, switch the required custom domains to the production Worker and run the suite again with `SITE_URL` set to the live site. If the custom domains fail verification, remove the conflicting Worker bindings and restore the captured Azure web targets in Cloudflare DNS.
+The production Worker serves both [cocobokostudios.com](https://cocobokostudios.com/) and [www.cocobokostudios.com](https://www.cocobokostudios.com/). To run the Playwright suite against a live hostname, set `SITE_URL` to its HTTPS URL before running `pnpm run test:e2e`.
