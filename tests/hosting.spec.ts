@@ -1,6 +1,13 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 
+const siteLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Games', href: '/#games' },
+  { label: 'About', href: '/#about' },
+  { label: 'Get Notified', href: '/#get-notified' },
+];
+
 test('serves the release verified by this workflow', async ({ request }) => {
   test.skip(process.env.CHECK_RELEASE !== 'true', 'Only used to verify a deployed artifact');
   const release = await readFile('dist/release.txt', 'utf8');
@@ -16,6 +23,14 @@ test('serves the release verified by this workflow', async ({ request }) => {
 test('renders both games and supports desktop and mobile navigation', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const navigation = page.getByRole('navigation', { name: 'Primary' });
+  const menuLinks = navigation.locator('#primary-menu').getByRole('link');
+  const labels = siteLinks.map(({ label }) => label);
+
+  await expect(page.locator('main > :is(header, section)').evaluateAll(sections =>
+    sections.map(section => section.id || section.localName),
+  )).resolves.toEqual(['header', 'games', 'about', 'get-notified']);
+  await expect(menuLinks).toHaveText(labels);
+
   await navigation.getByRole('link', { name: 'Games' }).click();
   await expect(page).toHaveURL(/#games$/);
   for (const game of ['Passenger', 'Agent']) {
@@ -33,9 +48,25 @@ test('renders both games and supports desktop and mobile navigation', async ({ p
   await expect(about).toBeHidden();
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(menuLinks).toHaveText(labels);
   await about.click();
   await expect(page).toHaveURL(/#about$/);
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('footer links follow the site order and reach the homepage from secondary pages', async ({ page }) => {
+  const footer = page.getByRole('navigation', { name: 'Footer' });
+  await page.goto('/credits/');
+  await expect(footer.getByRole('link')).toHaveText([
+    ...siteLinks.map(({ label }) => label),
+    'Privacy Policy', 'Code of Conduct', 'Generative AI Disclosure', 'Credits',
+  ]);
+
+  for (const { label, href } of siteLinks) {
+    await page.goto('/credits/');
+    await footer.getByRole('link', { name: label, exact: true }).click();
+    await expect(page).toHaveURL(href);
+  }
 });
 
 test('falls back to the analytics CDN when the vendored script is unavailable', async ({ page }) => {

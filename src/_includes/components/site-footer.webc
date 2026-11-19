@@ -6,6 +6,11 @@
     </p>
     <nav class="mt-5" aria-label="Footer">
       <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+        <li webc:for="link of links">
+          <a class="text-gray-500 underline hover:text-indigo-600" :href="link.href" @text="link.label"></a>
+        </li>
+      </ul>
+      <ul class="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
         <li><a class="text-gray-500 underline hover:text-indigo-600" href="/privacy-policy">Privacy Policy</a></li>
         <li><a class="text-gray-500 underline hover:text-indigo-600" href="/code-of-conduct">Code of Conduct</a></li>
         <li><a class="text-gray-500 underline hover:text-indigo-600" href="/generative-ai-disclosure">Generative AI Disclosure</a></li>
