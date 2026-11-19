@@ -77,4 +77,11 @@ Review the resulting vendor diffs before committing them.
 
 ## Deployment
 
-Any static host can serve the `dist/` directory. `swa-cli.config.json` is retained for Azure Static Web Apps local tooling; the site has no Netlify-specific requirements.
+The Cloudflare workflow verifies pull requests under the Workers runtime. On main, it deploys the same verified artifact to staging and production in the **Cocoboko Studios** Cloudflare account and runs the tests against each live deployment. Deployment requires the GitHub Actions secret `CLOUDFLARE_API_TOKEN` with Workers Scripts Edit for the studio account.
+
+- Staging is served at [studio-website-staging.cocobokostudios.workers.dev](https://studio-website-staging.cocobokostudios.workers.dev/).
+- Production is served at [studio-website.cocobokostudios.workers.dev](https://studio-website.cocobokostudios.workers.dev/) before DNS cutover.
+
+The workflow summary records the commit and artifact digest. The deployment logs record each Worker version and the smoke tests verify the commit and digest served in `/release.txt`.
+
+Keep the Azure deployment active until the Cloudflare production Worker has passed and the live domain has been verified. Before switching nameservers, compare the Cloudflare zone with the complete authoritative DNS inventory and preserve the Azure web targets. Once delegation and TLS are ready, switch the required custom domains to the production Worker and run the suite again with `SITE_URL` set to the live site. If the custom domains fail verification, remove the conflicting Worker bindings and restore the captured Azure web targets in Cloudflare DNS. After acceptance, disable the Azure deployment job and retain its origin for rollback.

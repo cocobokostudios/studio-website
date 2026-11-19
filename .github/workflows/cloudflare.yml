@@ -1,0 +1,96 @@
+name: Cloudflare
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          lfs: true
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run build
+      - name: Record artifact identity
+        run: |
+          (cd dist && find . -type f -print0 | sort -z | xargs -0 sha256sum) > site.sha256
+          digest=$(sha256sum site.sha256 | cut -d ' ' -f1)
+          printf '%s %s\n' "$GITHUB_SHA" "$digest" > dist/release.txt
+      - name: Test under the Workers runtime
+        run: pnpm run test:e2e
+        env:
+          SITE_PREVIEW_COMMAND: pnpm dlx wrangler@4.137.0 dev --local --ip 127.0.0.1 --port 4321
+      - uses: actions/upload-artifact@v7
+        with:
+          name: verified-site
+          path: |
+            dist/
+            site.sha256
+          if-no-files-found: error
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: verified-site
+      - name: Verify downloaded artifact
+        run: |
+          (cd dist && sha256sum --check ../site.sha256)
+          digest=$(sha256sum site.sha256 | cut -d ' ' -f1)
+          test "$(cat dist/release.txt)" = "$GITHUB_SHA $digest"
+          printf 'Commit `%s`\n\nArtifact digest `%s`\n' "$GITHUB_SHA" "$digest" >> "$GITHUB_STEP_SUMMARY"
+      - name: Deploy to staging
+        uses: cloudflare/wrangler-action@25853364521e0d392ece9b0c1e97a4b37b638087 # v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 0ae46efee531a634c7076a6db4b47ee5
+          wranglerVersion: '4.137.0'
+          packageManager: pnpm
+          command: deploy --env staging
+      - name: Verify staging deployment
+        run: pnpm run test:e2e
+        env:
+          SITE_URL: https://studio-website-staging.cocobokostudios.workers.dev
+          CHECK_RELEASE: 'true'
+      - name: Deploy to production
+        uses: cloudflare/wrangler-action@25853364521e0d392ece9b0c1e97a4b37b638087 # v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 0ae46efee531a634c7076a6db4b47ee5
+          wranglerVersion: '4.137.0'
+          packageManager: pnpm
+          command: deploy
+      - name: Verify production deployment
+        run: pnpm run test:e2e
+        env:
+          SITE_URL: https://studio-website.cocobokostudios.workers.dev
+          CHECK_RELEASE: 'true'

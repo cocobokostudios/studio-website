@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const routes = ['/', '/privacy-policy/', '/code-of-conduct/'];
+const routes = ['/', '/privacy-policy/', '/code-of-conduct/', '/generative-ai-disclosure/', '/credits/'];
 
 for (const route of routes) {
   test(`${route} returns a complete page`, async ({ request }) => {
@@ -38,7 +38,7 @@ test('production HTML ships first-party MailerLite and resilient analytics loadi
 });
 
 test('MailerLite is only loaded on the page that contains its form', async ({ request }) => {
-  for (const route of ['/privacy-policy/', '/code-of-conduct/']) {
+  for (const route of routes.slice(1)) {
     const response = await request.get(route);
     const html = await response.text();
 
@@ -64,6 +64,8 @@ test('compiled assets and generated images are available', async ({ request }) =
     '/assets/alpine.js',
     '/images/generated/agent_website_banner-640.webp',
     '/images/generated/agent_website_banner-960.webp',
+    '/images/generated/passenger_website_banner-640.webp',
+    '/images/generated/passenger_website_banner-960.webp',
     '/images/generated/studio-desk-480.webp',
     '/images/generated/studio-desk-960.webp',
     '/images/generated/studio-desk-1440.webp',
@@ -71,6 +73,17 @@ test('compiled assets and generated images are available', async ({ request }) =
     const response = await request.get(asset);
     expect(response.ok(), `${asset} should be available`).toBeTruthy();
   }
+});
+
+test('public page aliases resolve and missing pages return 404', async ({ request }) => {
+  for (const route of routes.slice(1)) {
+    for (const alias of [route.slice(0, -1), `${route}index.html`]) {
+      const response = await request.get(alias);
+      expect(response.status(), alias).toBe(200);
+      expect(await response.text()).toContain('<main');
+    }
+  }
+  expect((await request.get('/missing-cloudflare-check')).status()).toBe(404);
 });
 
 test('primary navigation links resolve', async ({ request }) => {

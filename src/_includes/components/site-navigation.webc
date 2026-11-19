@@ -4,6 +4,7 @@
     aria-label="Primary"
     x-data="{ isOpen: false }"
     x-on:keydown.escape.window="isOpen = false"
+    x-on:click.outside="isOpen = false"
   >
     <a href="/" class="flex items-center gap-3 font-bold text-indigo-600">
       <img class="size-9 rounded-full" src="/images/logo.webp" alt="">
@@ -28,7 +29,6 @@
       id="primary-menu"
       class="w-full lg:ml-auto lg:block lg:w-auto"
       x-bind:class="isOpen ? 'block' : 'hidden'"
-      x-on:click.outside="isOpen = false"
     >
       <ul class="pt-5 text-center lg:flex lg:items-center lg:gap-1 lg:pt-0">
         <li><a class="block px-4 py-2 text-gray-500 hover:text-indigo-600" href="/" x-on:click="isOpen = false">Home</a></li>

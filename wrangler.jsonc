@@ -1,0 +1,24 @@
+{
+  "name": "studio-website",
+  "account_id": "0ae46efee531a634c7076a6db4b47ee5",
+  "compatibility_date": "2026-09-24",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  },
+  "env": {
+    "staging": {
+      "name": "studio-website-staging",
+      "workers_dev": true,
+      "preview_urls": false,
+      "assets": {
+        "directory": "./dist",
+        "html_handling": "auto-trailing-slash",
+        "not_found_handling": "none"
+      }
+    }
+  }
+}
