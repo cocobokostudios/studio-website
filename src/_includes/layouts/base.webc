@@ -17,9 +17,9 @@
     <mailer-lite-header webc:if="usesMailerLite"></mailer-lite-header>
   </head>
   <body class="flex min-h-screen flex-col bg-white font-sans text-gray-700 antialiased">
-    <site-navigation></site-navigation>
+    <site-navigation :links="navigation"></site-navigation>
     <div class="flex-1" @raw="content"></div>
-    <site-footer></site-footer>
+    <site-footer :links="navigation"></site-footer>
     <site-analytics></site-analytics>
   </body>
 </html>

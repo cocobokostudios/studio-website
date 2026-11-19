@@ -31,10 +31,9 @@
       x-bind:class="isOpen ? 'block' : 'hidden'"
     >
       <ul class="pt-5 text-center lg:flex lg:items-center lg:gap-1 lg:pt-0">
-        <li><a class="block px-4 py-2 text-gray-500 hover:text-indigo-600" href="/" x-on:click="isOpen = false">Home</a></li>
-        <li><a class="block px-4 py-2 text-gray-500 hover:text-indigo-600" href="/#get-notified" x-on:click="isOpen = false">Get Notified</a></li>
-        <li><a class="block px-4 py-2 text-gray-500 hover:text-indigo-600" href="/#about" x-on:click="isOpen = false">About</a></li>
-        <li><a class="block px-4 py-2 text-gray-500 hover:text-indigo-600" href="/#games" x-on:click="isOpen = false">Games</a></li>
+        <li webc:for="link of links">
+          <a class="block px-4 py-2 text-gray-500 hover:text-indigo-600" :href="link.href" x-on:click="isOpen = false" @text="link.label"></a>
+        </li>
       </ul>
     </div>
   </nav>

@@ -6,6 +6,8 @@ usesMailerLite: true
 ---
 <main>
   <site-hero></site-hero>
+  <site-games :games="games"></site-games>
+  <site-about></site-about>
   <section id="get-notified" class="container mx-auto max-w-3xl px-6 py-20 lg:px-8 lg:py-28">
     <div class="rounded-lg border border-gray-200 p-8 text-center hover:border-purple-400 sm:p-12">
       <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">Studio updates</p>
@@ -14,6 +16,4 @@ usesMailerLite: true
       </div>
     </div>
   </section>
-  <site-about></site-about>
-  <site-games :games="games"></site-games>
 </main>
