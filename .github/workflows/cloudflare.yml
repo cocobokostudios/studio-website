@@ -50,6 +50,8 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: verify
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_ACCOUNT_ID: '0ae46efee531a634c7076a6db4b47ee5'
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v6
@@ -69,26 +71,18 @@ jobs:
           test "$(cat dist/release.txt)" = "$GITHUB_SHA $digest"
           printf 'Commit `%s`\n\nArtifact digest `%s`\n' "$GITHUB_SHA" "$digest" >> "$GITHUB_STEP_SUMMARY"
       - name: Deploy to staging
-        uses: cloudflare/wrangler-action@25853364521e0d392ece9b0c1e97a4b37b638087 # v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 0ae46efee531a634c7076a6db4b47ee5
-          wranglerVersion: '4.137.0'
-          packageManager: pnpm
-          command: deploy --env staging
+        run: pnpm dlx wrangler@4.137.0 deploy --env staging
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Verify staging deployment
         run: pnpm run test:e2e
         env:
           SITE_URL: https://studio-website-staging.cocobokostudios.workers.dev
           CHECK_RELEASE: 'true'
       - name: Deploy to production
-        uses: cloudflare/wrangler-action@25853364521e0d392ece9b0c1e97a4b37b638087 # v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 0ae46efee531a634c7076a6db4b47ee5
-          wranglerVersion: '4.137.0'
-          packageManager: pnpm
-          command: deploy
+        run: pnpm dlx wrangler@4.137.0 deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Verify production deployment
         run: pnpm run test:e2e
         env:
