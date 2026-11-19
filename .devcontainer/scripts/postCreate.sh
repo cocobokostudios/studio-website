@@ -12,10 +12,6 @@ git lfs install
 git lfs pull
 git lfs checkout
 
-# Install Azure Static Web Apps CLI
-echo "Installing Azure Static Web Apps CLI..."
-npm install -g @azure/static-web-apps-cli
-
 # Install project dependencies
 echo "Installing project dependencies..."
 npm install
